@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  db:
+    container_name: ${PROJECT_NAME:-openimis}-db
+    image: ghcr.io/openimis/openimis-pgsql:${DB_TAG:-develop}
+    environment:
+      - POSTGRES_PASSWORD=$PSQL_DB_PASSWORD
+      - POSTGRES_DB=$PSQL_DB_NAME
+      - POSTGRES_USER=$PSQL_DB_USER
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', "$PSQL_DB_USER", '-d', "openimis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - database:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5433:5432
+
+  web:
+    build: .
+    command: manage runserver 0.0.0.0:8000
+    # platform: linux/arm64/v8
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+
+
+volumes:
+  database:
+
