@@ -26,6 +26,9 @@ from .settings import SITE_ROOT, DEBUG
 
 urlpatterns = [
     path("%sadmin/" % SITE_ROOT(), admin.site.urls),
+    path('api/', include('insuree.urls')),
+    path('api/', include('contribution.urls')),
+    path('api/', include('claim.urls')),
     path(
         "%sgraphql" % SITE_ROOT(),
         csrf_exempt(jwt_cookie(OpenIMISGraphQLView.as_view(graphiql=DEBUG))),
